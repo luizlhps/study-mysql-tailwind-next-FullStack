@@ -1,11 +1,12 @@
-import mysql from 'mysql2';
+import mysql, { PoolOptions } from 'mysql2/promise';
 
-const connection = mysql.createPool({
+const access: PoolOptions = {
   connectionLimit: 10,
-  host: 'seu-host',
-  user: 'seu-usuario',
-  password: 'sua-senha',
-  database: 'seu-banco-de-dados',
-});
+  host: 'localhost',
+  user: 'usuario',
+  password: 'senha',
+  database: 'base_de_dados',
+};
+const pool = mysql.createPool(access);
 
-export const promisePool = connection.promise();
+export default pool;

@@ -3,6 +3,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Api } from '../services/axiosConfig';
+import { useEffect } from 'react';
 
 export const CreateUser = () => {
   const {
@@ -14,7 +15,7 @@ export const CreateUser = () => {
   const onSubmit = (data: any) => {
     console.log(data);
 
-    Api.get('api/user')
+    Api.post('user', data)
       .then((res) => {
         console.log(res.data);
       })
