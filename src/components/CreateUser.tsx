@@ -4,6 +4,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Api } from '../services/axiosConfig';
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export const CreateUser = () => {
   const {
@@ -11,6 +12,7 @@ export const CreateUser = () => {
     formState: { errors },
     handleSubmit,
   } = useForm();
+  const router = useRouter();
 
   const onSubmit = (data: any) => {
     console.log(data);
@@ -21,6 +23,9 @@ export const CreateUser = () => {
       })
       .catch((err) => {
         console.log(err);
+      })
+      .finally(() => {
+        router.refresh();
       });
   };
 

@@ -11,7 +11,7 @@ export async function GET() {
 
     return NextResponse.json(customer);
   } catch (error) {
-    console.log('[COURSES]', error);
+    console.log('[GETUSER]', error);
     return new NextResponse('Internal Error', { status: 500 });
   } finally {
     if (mysql) {
@@ -30,12 +30,12 @@ export async function POST(req: Request) {
     const [rows, fields] = await mysql.execute('INSERT INTO customer (name, phone) VALUES (?, ?)', [name, phone]);
     const insertId = 'insertId' in rows ? rows.insertId : undefined;
 
-    const [newRecord, fieldss] = await mysql.query('SELECT * FROM customer WHERE id = ?', [insertId]);
+    const [newRecord] = await mysql.query('SELECT * FROM customer WHERE id = ?', [insertId]);
     const customer = Array.isArray(newRecord) ? newRecord[0] : undefined;
 
     return NextResponse.json(customer);
   } catch (error) {
-    console.log('[COURSES]', error);
+    console.log('[POSTUSER]', error);
     return new NextResponse('Internal Error', { status: 500 });
   } finally {
     if (mysql) {

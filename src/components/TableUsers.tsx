@@ -3,6 +3,8 @@
 import { Api } from '../services/axiosConfig';
 import { useEffect, useState } from 'react';
 import { Edit, Trash } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '@/lib/redux/store';
+import { fetchUsers } from '@/lib/redux/slices/fetchUsersSlice';
 
 export interface IUsers {
   phone: string;
@@ -11,20 +13,24 @@ export interface IUsers {
 }
 
 export const TableUsers = () => {
-  const [users, setUsers] = useState<IUsers[]>();
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state?.fetchUsers.users);
 
   useEffect(() => {
-    Api.get<IUsers[]>('user')
+    dispatch(fetchUsers());
+  }, [dispatch]);
+
+  const handleDelete = (id: IUsers['id']) => {
+    console.log(id);
+
+    Api.delete(`user/${id}`)
       .then((res) => {
-        setUsers(res.data);
+        console.log(res.data);
+        dispatch(fetchUsers());
       })
       .catch((err) => {
         console.log(err);
       });
-  }, []);
-
-  const handleDelete = (id: IUsers['id']) => {
-    console.log(id);
   };
 
   return (
@@ -40,7 +46,7 @@ export const TableUsers = () => {
           </tr>
         </thead>
         <tbody className='divide-y divide-white/20 '>
-          {users?.map((data) => (
+          {user?.map((data) => (
             <tr key={data.id} className='mb-3 dark:bg-slate-800'>
               <td className='text-left px-4 py-2 sm:px-6 sm:py-4'>{data.name}</td>
               <td className='text-left px-4 py-2 sm:px-6 sm:py-4'>{data.phone}</td>
