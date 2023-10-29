@@ -1,10 +1,10 @@
 'use client';
 
 import { Api } from '../services/axiosConfig';
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { Edit, Trash } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/lib/redux/store';
-import { fetchUsers } from '@/lib/redux/slices/fetchUsersSlice';
+import { addUser, fetchUsers, removeUser } from '@/lib/redux/slices/fetchUsersSlice';
 
 export interface IUsers {
   phone: string;
@@ -15,18 +15,26 @@ export interface IUsers {
 export const TableUsers = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state?.fetchUsers.users);
+  const stateChargedInFetchUsers = useAppSelector((state) => state?.fetchUsers.usersChangedTotal);
 
+  //call Api
   useEffect(() => {
     dispatch(fetchUsers());
-  }, [dispatch]);
+  }, []);
+
+  //call Api after 5 charged in fetchUsers state
+  useEffect(() => {
+    if (stateChargedInFetchUsers === 5) {
+      dispatch(fetchUsers());
+    }
+    console.log(stateChargedInFetchUsers);
+  }, [stateChargedInFetchUsers]);
 
   const handleDelete = (id: IUsers['id']) => {
-    console.log(id);
-
     Api.delete(`user/${id}`)
       .then((res) => {
         console.log(res.data);
-        dispatch(fetchUsers());
+        dispatch(removeUser(id));
       })
       .catch((err) => {
         console.log(err);

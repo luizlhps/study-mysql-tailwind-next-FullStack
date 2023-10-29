@@ -1,31 +1,44 @@
 'use client';
 
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Api } from '../services/axiosConfig';
-import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import fetchUsersSlice, { addUser, fetchUsers } from '@/lib/redux/slices/fetchUsersSlice';
+import { useAppDispatch, useAppSelector } from '@/lib/redux/store';
+import { useEffect } from 'react';
+import { IUsers } from './TableUsers';
 
 export const CreateUser = () => {
   const {
     register,
     formState: { errors },
     handleSubmit,
-  } = useForm();
-  const router = useRouter();
+  } = useForm<IUsers>();
+  const dispatch = useAppDispatch();
+  const stateChargedInFetchUsers = useAppSelector((state) => state?.fetchUsers.usersChangedTotal);
 
-  const onSubmit = (data: any) => {
-    console.log(data);
+  //call Api
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, []);
 
+  //call Api after 5 charged in fetchUsers state
+  useEffect(() => {
+    if (stateChargedInFetchUsers === 5) {
+      dispatch(fetchUsers());
+      console.log('exec');
+    }
+    console.log(stateChargedInFetchUsers);
+  }, [stateChargedInFetchUsers]);
+
+  const onSubmit = (data: IUsers) => {
     Api.post('user', data)
       .then((res) => {
         console.log(res.data);
+        dispatch(addUser(res.data));
       })
       .catch((err) => {
         console.log(err);
-      })
-      .finally(() => {
-        router.refresh();
       });
   };
 

@@ -6,7 +6,7 @@ export async function GET() {
   let mysql: PoolConnection | null = null;
   try {
     mysql = await db.getConnection();
-    const [newRecord, fieldss] = await mysql.query('SELECT * FROM customer ORDER BY name ASC');
+    const [newRecord, fieldss] = await mysql.query('SELECT * FROM customer ORDER BY id DESC');
     const customer = newRecord;
 
     return NextResponse.json(customer);
