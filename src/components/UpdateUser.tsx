@@ -2,19 +2,23 @@
 
 import { useForm } from 'react-hook-form';
 import { Api } from '../services/axiosConfig';
-import { useRouter } from 'next/navigation';
-import fetchUsersSlice, { addUser, fetchUsers } from '@/lib/redux/slices/fetchUsersSlice';
+import { fetchUsers, updateUser } from '@/lib/redux/slices/fetchUsersSlice';
 import { useAppDispatch, useAppSelector } from '@/lib/redux/store';
 import { useEffect } from 'react';
 import { IUsers } from './TableUsers';
 import { InputForm } from './InputForm';
 
-export const CreateUser = () => {
+export const UpdateUser = ({ selectedItem, handleClose }: { selectedItem: IUsers; handleClose: () => void }) => {
   const {
     register,
     formState: { errors },
     handleSubmit,
-  } = useForm<IUsers>();
+  } = useForm<IUsers>({
+    defaultValues: {
+      name: selectedItem.name,
+      phone: selectedItem.phone,
+    },
+  });
   const dispatch = useAppDispatch();
   const stateChargedInFetchUsers = useAppSelector((state) => state?.fetchUsers.usersChangedTotal);
 
@@ -31,10 +35,11 @@ export const CreateUser = () => {
   }, [stateChargedInFetchUsers]);
 
   const onSubmit = (data: IUsers) => {
-    Api.post('user', data)
+    Api.put(`user/${selectedItem.id}`, data)
       .then((res) => {
         console.log(res.data);
-        dispatch(addUser(res.data));
+        dispatch(updateUser(res.data));
+        handleClose();
       })
       .catch((err) => {
         console.log(err);
@@ -54,7 +59,7 @@ export const CreateUser = () => {
           <InputForm.Error errors={errors} name='phone' />
         </InputForm.Input>
 
-        <InputForm.Button handleSubmit={handleSubmit} nameButton='New' onSubmit={onSubmit}></InputForm.Button>
+        <InputForm.Button handleSubmit={handleSubmit} nameButton='Update' onSubmit={onSubmit} />
       </InputForm.Root>
     </div>
   );

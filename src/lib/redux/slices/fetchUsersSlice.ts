@@ -27,6 +27,22 @@ const fetchUsersSlice = createSlice({
       state.users = state.users.filter((user) => user.id !== userIdToRemove);
       state.usersChangedTotal = state.usersChangedTotal <= 5 ? state.usersChangedTotal + 1 : state.usersChangedTotal;
     },
+    updateUser: (state, action) => {
+      const userIdToUpdate = action.payload.id;
+
+      const changedState = state.users.map((item) => {
+        if (item.id === userIdToUpdate) {
+          return action.payload;
+        }
+        return item;
+      });
+
+      console.log(changedState);
+      console.log(changedState);
+
+      state.users = changedState;
+      state.usersChangedTotal = state.usersChangedTotal <= 5 ? state.usersChangedTotal + 1 : state.usersChangedTotal;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchUsers.pending, (state) => {
@@ -46,5 +62,5 @@ const fetchUsersSlice = createSlice({
   },
 });
 
-export const { addUser, removeUser } = fetchUsersSlice.actions;
+export const { addUser, removeUser, updateUser } = fetchUsersSlice.actions;
 export default fetchUsersSlice.reducer;

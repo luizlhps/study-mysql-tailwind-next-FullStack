@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CreateUser } from './CreateUser';
 import { TableUsers } from './TableUsers';
 import { useDispatch } from 'react-redux';
 import fetchUsersSlice, { fetchUsers } from '@/lib/redux/slices/fetchUsersSlice';
 import { useSelector } from 'react-redux';
 import { AppDispatch, useAppDispatch, useAppSelector } from '@/lib/redux/store';
+import { Modal } from './Modal';
 
 export const UsersWrapper = () => {
   return (
