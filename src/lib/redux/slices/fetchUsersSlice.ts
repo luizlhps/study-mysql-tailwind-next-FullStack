@@ -1,4 +1,4 @@
-import { IUsers } from '@/components/TableUsers';
+import { IRootUser, IUsers } from '@/components/TableUsers';
 import { Api } from '@/services/axiosConfig';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
@@ -7,12 +7,16 @@ const initialState = {
   users: [] as IUsers[],
   error: '' as string | undefined,
   usersChangedTotal: 0,
+  totalUsers: 0
 };
 
-export const fetchUsers = createAsyncThunk('user/fetchUsers', async () => {
-  const response = await Api.get<IUsers[]>('/user');
-  return response.data;
-});
+export const fetchUsers = createAsyncThunk(
+  'user/fetchUsers',
+  async ({ limit, skip }: { limit: number; skip: number }) => {
+    const response = await Api.get<IRootUser>(`/user?limit=${limit}&skip=${skip}`);
+    return response.data;
+  }
+);
 
 const fetchUsersSlice = createSlice({
   name: 'user',
@@ -50,14 +54,15 @@ const fetchUsersSlice = createSlice({
     });
     builder.addCase(fetchUsers.fulfilled, (state, action) => {
       state.loading = false;
-      state.users = action.payload;
+      state.users = action.payload.customer;
+      state.totalUsers = action.payload.total
       state.usersChangedTotal = 0;
       state.error = '';
     });
     builder.addCase(fetchUsers.rejected, (state, action) => {
       state.loading = false;
       state.users = [];
-      state.error = action.error.message; // Armazene a mensagem de erro
+      state.error = action.error.message; 
     });
   },
 });

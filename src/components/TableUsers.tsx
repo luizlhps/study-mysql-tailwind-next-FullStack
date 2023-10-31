@@ -7,11 +7,16 @@ import { useAppDispatch, useAppSelector } from '@/lib/redux/store';
 import { addUser, fetchUsers, removeUser } from '@/lib/redux/slices/fetchUsersSlice';
 import { Modal } from './Modal';
 import { UpdateUser } from './UpdateUser';
+import { Pagination } from './Pagination';
 
 export interface IUsers {
   phone: string;
   name: string;
   id: number;
+}
+export interface IRootUser {
+  total:number
+  customer: IUsers[]
 }
 
 export const TableUsers = () => {
@@ -21,6 +26,11 @@ export const TableUsers = () => {
 
   const [openModal, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<IUsers>();
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const handlePagination = (value: number) =>{
+    setCurrentPage(value)
+  }
 
   const handleClose = () => {
     setModalOpen(false);
@@ -32,13 +42,13 @@ export const TableUsers = () => {
 
   //call Api
   useEffect(() => {
-    dispatch(fetchUsers());
-  }, []);
+    dispatch(fetchUsers({ limit: 10, skip: currentPage  }));
+  }, [currentPage]);
 
   //call Api after 5 charged in fetchUsers state
   useEffect(() => {
     if (stateChargedInFetchUsers === 5) {
-      dispatch(fetchUsers());
+      dispatch(fetchUsers({ limit: 10, skip: currentPage  }));
     }
   }, [stateChargedInFetchUsers]);
 
@@ -96,6 +106,8 @@ export const TableUsers = () => {
           </tbody>
         </table>
       </div>
+      <Pagination totalPage={2} onChange={handlePagination} page={currentPage}/>
+
     </>
   );
 };

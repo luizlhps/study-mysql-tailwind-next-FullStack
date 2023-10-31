@@ -2,14 +2,24 @@ import { NextRequest, NextResponse } from 'next/server';
 import db from '../../../lib/db';
 import { PoolConnection, RowDataPacket } from 'mysql2/promise';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const limit = searchParams.get('limit');
+  const skip = searchParams.get('skip');
+
   let mysql: PoolConnection | null = null;
   try {
     mysql = await db.getConnection();
-    const [newRecord, fieldss] = await mysql.query('SELECT * FROM customer ORDER BY id DESC');
+    const [newRecord, fieldss] = await mysql.query('SELECT * FROM customer ORDER BY id DESC LIMIT ? OFFSET ?', [
+      Number(limit),
+      (Number(skip) - 1) * Number(limit) ,
+    ]);
+
+    const [ count] = await mysql.query('SELECT COUNT(*) FROM customer;')
+
     const customer = newRecord;
 
-    return NextResponse.json(customer);
+    return NextResponse.json({customer: customer, total: count});
   } catch (error) {
     console.log('[GETUSER]', error);
     return new NextResponse('Internal Error', { status: 500 });

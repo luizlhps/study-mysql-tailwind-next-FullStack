@@ -24,13 +24,13 @@ export const UpdateUser = ({ selectedItem, handleClose }: { selectedItem: IUsers
 
   //call Api
   useEffect(() => {
-    dispatch(fetchUsers());
+    dispatch(fetchUsers({ limit: 10, skip: 0 }));
   }, []);
 
   //call Api after 5 charged in fetchUsers state
   useEffect(() => {
     if (stateChargedInFetchUsers === 5) {
-      dispatch(fetchUsers());
+      dispatch(fetchUsers({ limit: 10, skip: 0 }));
     }
   }, [stateChargedInFetchUsers]);
 
