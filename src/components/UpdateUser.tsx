@@ -21,11 +21,9 @@ export const UpdateUser = ({ selectedItem, handleClose }: { selectedItem: IUsers
   });
   const dispatch = useAppDispatch();
   const stateChargedInFetchUsers = useAppSelector((state) => state?.fetchUsers.usersChangedTotal);
+  const limitFetchUsers = useAppSelector((state) => state?.fetchUsers.limit);
+  const pageFetchUsers = useAppSelector((state) => state?.fetchUsers.page);
 
-  //call Api
-  useEffect(() => {
-    dispatch(fetchUsers({ limit: 10, skip: 0 }));
-  }, []);
 
   //call Api after 5 charged in fetchUsers state
   useEffect(() => {
@@ -38,7 +36,7 @@ export const UpdateUser = ({ selectedItem, handleClose }: { selectedItem: IUsers
     Api.put(`user/${selectedItem.id}`, data)
       .then((res) => {
         console.log(res.data);
-        dispatch(updateUser(res.data));
+        dispatch(fetchUsers({limit: limitFetchUsers, skip:pageFetchUsers}));
         handleClose();
       })
       .catch((err) => {

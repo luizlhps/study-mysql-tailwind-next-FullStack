@@ -17,6 +17,11 @@ export const Pagination = ({ page, totalPage, onChange }: IProps) => {
   //e se eu tiver 10 de limite e 23 arquivos ?
   //23/10 2.3
 
+  useEffect(()=>{
+  console.log(totalPage);
+
+  })
+
   const totalPages = totalPage;
   const maxVisiblePages = 5;
 
@@ -31,6 +36,9 @@ export const Pagination = ({ page, totalPage, onChange }: IProps) => {
     let fillArray;
 
     switch (true) {
+      case totalPages === 1:
+        pageNumbers.push(1);
+        break;
       case currentPage < maxVisiblePages && totalPages >= 6:
         fillArray = new Array(maxVisiblePages).fill(undefined).map((_, index) => index + 1);
         pageNumbers.push(...fillArray, '...', totalPages);
@@ -43,19 +51,21 @@ export const Pagination = ({ page, totalPage, onChange }: IProps) => {
 
       case currentPage < maxVisiblePages:
         fillArray = new Array(totalPages).fill(undefined).map((_, index) => index + 1);
-        pageNumbers.push(...fillArray)
+        pageNumbers.push(...fillArray);
         break;
 
       case currentPage > totalPages - maxVisiblePages + 1:
         fillArray = new Array(totalPages).fill(undefined).map((_, index) => index + 1);
-        pageNumbers.push(...fillArray)
+        pageNumbers.push(...fillArray);
         break;
+
+
 
       default:
         pageNumbers.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
     }
     setArrayOfPages(pageNumbers);
-  }, [currentPage]);
+  }, [currentPage, totalPage]);
 
   const handlePageChange = (page: number | string) => {
     if (typeof page === 'number') setCurrentPage(page);

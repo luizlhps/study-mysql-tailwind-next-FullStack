@@ -17,16 +17,14 @@ export const CreateUser = () => {
   } = useForm<IUsers>();
   const dispatch = useAppDispatch();
   const stateChargedInFetchUsers = useAppSelector((state) => state?.fetchUsers.usersChangedTotal);
+  const limitFetchUsers = useAppSelector((state) => state?.fetchUsers.limit);
+  const pageFetchUsers = useAppSelector((state) => state?.fetchUsers.page);
 
-  //call Api
-  useEffect(() => {
-    dispatch(fetchUsers());
-  }, []);
 
   //call Api after 5 charged in fetchUsers state
   useEffect(() => {
     if (stateChargedInFetchUsers === 5) {
-      dispatch(fetchUsers());
+      dispatch(fetchUsers({limit: limitFetchUsers, skip:pageFetchUsers}));
     }
   }, [stateChargedInFetchUsers]);
 
@@ -34,7 +32,7 @@ export const CreateUser = () => {
     Api.post('user', data)
       .then((res) => {
         console.log(res.data);
-        dispatch(addUser(res.data));
+        dispatch(fetchUsers({limit: limitFetchUsers, skip:pageFetchUsers}));
       })
       .catch((err) => {
         console.log(err);

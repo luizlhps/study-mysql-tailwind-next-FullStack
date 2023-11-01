@@ -7,7 +7,9 @@ const initialState = {
   users: [] as IUsers[],
   error: '' as string | undefined,
   usersChangedTotal: 0,
-  totalUsers: 0
+  totalUsers: 0,
+  limit:0,
+  page:0
 };
 
 export const fetchUsers = createAsyncThunk(
@@ -41,9 +43,6 @@ const fetchUsersSlice = createSlice({
         return item;
       });
 
-      console.log(changedState);
-      console.log(changedState);
-
       state.users = changedState;
       state.usersChangedTotal = state.usersChangedTotal <= 5 ? state.usersChangedTotal + 1 : state.usersChangedTotal;
     },
@@ -55,14 +54,16 @@ const fetchUsersSlice = createSlice({
     builder.addCase(fetchUsers.fulfilled, (state, action) => {
       state.loading = false;
       state.users = action.payload.customer;
-      state.totalUsers = action.payload.total
+      state.totalUsers = action.payload.total;
+      state.page = action.payload.page;
+      state.limit = action.payload.limit;
       state.usersChangedTotal = 0;
       state.error = '';
     });
     builder.addCase(fetchUsers.rejected, (state, action) => {
       state.loading = false;
       state.users = [];
-      state.error = action.error.message; 
+      state.error = action.error.message;
     });
   },
 });

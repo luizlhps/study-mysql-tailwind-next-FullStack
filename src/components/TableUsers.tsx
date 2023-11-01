@@ -15,22 +15,40 @@ export interface IUsers {
   id: number;
 }
 export interface IRootUser {
-  total:number
-  customer: IUsers[]
+  total: number;
+  customer: IUsers[];
+  page: number;
+  limit: number;
 }
 
 export const TableUsers = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state?.fetchUsers.users);
+  const totalUsers = useAppSelector((state) => state?.fetchUsers.totalUsers);
   const stateChargedInFetchUsers = useAppSelector((state) => state?.fetchUsers.usersChangedTotal);
+  const limitFetchUsers = useAppSelector((state) => state?.fetchUsers.limit);
+  const pageFetchUsers = useAppSelector((state) => state?.fetchUsers.page);
 
   const [openModal, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<IUsers>();
 
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const handlePagination = (value: number) =>{
-    setCurrentPage(value)
-  }
+  const handlePagination = (value: number) => {
+    setCurrentPage(value);
+  };
+
+  const limitPerPage = 5;
+
+  console.log(totalUsers);
+
+  const totalpagesUsers = (totalUsers: number, limit: number) => {
+    console.log(totalUsers, limit)
+    const numberFloat = totalUsers / limit;
+    const decimalValue = Math.ceil(numberFloat);
+
+    return decimalValue;
+  };
+
 
   const handleClose = () => {
     setModalOpen(false);
@@ -42,21 +60,15 @@ export const TableUsers = () => {
 
   //call Api
   useEffect(() => {
-    dispatch(fetchUsers({ limit: 10, skip: currentPage  }));
+    dispatch(fetchUsers({ limit: limitPerPage, skip: currentPage }));
   }, [currentPage]);
 
-  //call Api after 5 charged in fetchUsers state
-  useEffect(() => {
-    if (stateChargedInFetchUsers === 5) {
-      dispatch(fetchUsers({ limit: 10, skip: currentPage  }));
-    }
-  }, [stateChargedInFetchUsers]);
 
   const handleDelete = (id: IUsers['id']) => {
     Api.delete(`user/${id}`)
       .then((res) => {
         console.log(res.data);
-        dispatch(removeUser(id));
+        dispatch(fetchUsers({limit: limitFetchUsers, skip:pageFetchUsers}));
       })
       .catch((err) => {
         console.log(err);
@@ -106,8 +118,7 @@ export const TableUsers = () => {
           </tbody>
         </table>
       </div>
-      <Pagination totalPage={2} onChange={handlePagination} page={currentPage}/>
-
+      <Pagination totalPage={totalpagesUsers(totalUsers, limitPerPage)} onChange={handlePagination} page={currentPage} />
     </>
   );
 };
